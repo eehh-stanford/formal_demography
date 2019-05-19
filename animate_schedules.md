@@ -44,7 +44,7 @@ abline(v=mab$MAB[85], lty=2, col="red")
 
 I use the `animate` package to create the gifs. Another option would have been `gganimate` which extends the `ggplot2` grammar of graphics to animated images, but I have more experience with `animate`, so that's what I went with. `animate` uses the [ImageMagick](http://www.imagemagick.org/script/index.php) library to create its animations, which may be a turn-off for some people since you need to install it separately. Fortunately, it's pretty straightforward to install using either [MacPorts](http://www.macports.org/) or [HomeBrew](https://brew.sh/).
 
-Simply set up a `for` loop to generate the 85 ASFR curves within a `saveGIF()` command. I find that an interval of 0.3 seconds gives a pretty snappy but comprehensible. Anything much longer makes the animation seem ponderously slow. Any quicker and it's hard to relate the changing curves to the historical period.
+Simply set up a `for` loop to generate the 85 ASFR curves within a `saveGIF()` command. I find that an interval of 0.3 seconds gives a pretty snappy but comprehensible animation. Anything much longer makes the animation seem ponderously slow. Any quicker and it's hard to relate the changing curves to the historical period.
 
 ``` r
 library(animation)
