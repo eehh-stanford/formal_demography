@@ -100,7 +100,7 @@ I plot the natural logarithm of the sex-specific central death rate *m*<sub>*x*<
 7.  Slight decline in the mortality rate among oldest old.
 8.  Accentuation in sex differences as mortality improves.
 
-Again, use `animate` to generate the GIF animation of the evolution of the central death rate in the US. Add vertical lines to indicate life expectancy at birth for each year.
+Again, use `animate` to generate the GIF animation of the evolution of the central death rate in the US. Add vertical lines to indicate life expectancy at birth for each year. The female curves are plotted in black and the male curves are plotted in grey.
 
 ``` r
 saveGIF({
