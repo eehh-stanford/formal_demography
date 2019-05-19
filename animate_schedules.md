@@ -1,6 +1,9 @@
 Animating Age-Specific Demographic Schedules
 ================
 
+Age-Specfic Fertility
+=====================
+
 First, download the data from [the Human Fertility Database](https://www.humanfertility.org). There is an `R` package, [HMDHFDplus](https://cran.r-project.org/web/packages/HMDHFDplus/index.html), that has utilities designed for use with these repositories, but I find it better pedagogically to go old-school when I'm doing this for a class.
 
 Need to clean the ages a bit since under-12 is indicated as `12-` and over-55 by `55+`. Note that we have to double-escape the `+` in the regular expression since the plus sign is a quantifier for regular expressions.
@@ -44,7 +47,7 @@ abline(v=mab$MAB[85], lty=2, col="red")
 
 I use the `animate` package to create the gifs. Another option would have been `gganimate` which extends the `ggplot2` grammar of graphics to animated images, but I have more experience with `animate`, so that's what I went with. `animate` uses the [ImageMagick](http://www.imagemagick.org/script/index.php) library to create its animations, which may be a turn-off for some people since you need to install it separately. Fortunately, it's pretty straightforward to install using either [MacPorts](http://www.macports.org/) or [HomeBrew](https://brew.sh/).
 
-Simply set up a `for` loop to generate the 85 ASFR curves within a `saveGIF()` command. I find that an interval of 0.3 seconds gives a pretty snappy but comprehensible animation. Anything much longer makes the animation seem ponderously slow. Any quicker and it's hard to relate the changing curves to the historical period.
+Simply set up a `for` loop to generate the 85 ASFR curves within a `saveGIF()` command. I find that an interval of 0.3 seconds gives a pretty snappy but comprehensible. Anything much longer makes the animation seem ponderously slow. Any quicker and it's hard to relate the changing curves to the historical period.
 
 ``` r
 library(animation)
@@ -69,3 +72,60 @@ saveGIF({ for(i in 1:85){
 Unfortunately, the output doesn't display in a Markdown document, but I can insert it manually.
 
 ![animated asfr series](https://github.com/eehh-stanford/formal_demography/blob/master/usa_asfr_1933-2017.gif?raw=true)
+
+Central Death Rates
+===================
+
+I downloaded the annual life tables with one-year age groups from [the Human Mortality Database](http://www.mortality.org).
+
+``` r
+# 1x1 life tables for the USA, 1933-2017
+mlts <- read.table("usa_mltper_1x1.txt", header=TRUE, skip=2)
+flts <- read.table("usa_fltper_1x1.txt", header=TRUE, skip=2)
+mlts$Age <- as.numeric(gsub("110\\+", "110", as.character(mlts$Age)))
+flts$Age <- as.numeric(gsub("110\\+", "110", as.character(flts$Age)))
+# female and male life expectancies at birth
+fe0 <- flts$ex[flts$Age==0]
+me0 <- mlts$ex[mlts$Age==0]
+```
+
+I plot the natural logarithm of the sex-specific central death rate *m*<sub>*x*</sub> against age. This particular visualization allows us to see eight salient features of the human mortality experience:
+
+1.  Overall bathtub shape.
+2.  Marked sex differences, with male mortality being higher than female mortality at nearly every age.
+3.  An early peak in mortality, followed by a rapid decline.
+4.  Minimum mortality rate at around age 10-11.
+5.  Linear increase on a log-scale after about age 30.
+6.  Male accident hump in late adolescence/early adulthood (particularly acute during WWII).
+7.  Slight decline in the mortality rate among oldest old.
+8.  Accentuation in sex differences as mortality improves.
+
+Again, use `animate` to generate the GIF animation of the evolution of the central death rate in the US. Add vertical lines to indicate life expectancy at birth for each year.
+
+``` r
+saveGIF({
+  for(i in 1:85){
+    plot(flts$Age[flts$Year==yrs[i]], log(flts$mx[flts$Year==yrs[i]]), 
+         type="l", 
+         lwd=3,
+         col="black",
+         xlab="Age",
+         ylab="log(Mx)",
+         ylim=c(-9.5,0))
+    lines(mlts$Age[mlts$Year==yrs[i]], log(mlts$mx[mlts$Year==yrs[i]]),
+          lwd=3,
+          col=grey(0.85))
+    abline(v=fe0[i], lty=2, col="black")
+    abline(v=me0[i], lty=2, col=grey(0.85))
+    title(yrs[i])
+  }
+}, movie.name = "usa_mx_1933-2017.gif", interval = 0.3)
+```
+
+    ## Output at: usa_mx_1933-2017.gif
+
+    ## [1] TRUE
+
+Again, the output doesn't display in the Markdown document, but I've added a link to it.
+
+![animation of US central death rate](https://github.com/eehh-stanford/formal_demography/blob/master/usa_mx_1933-2017.gif?raw=true)
