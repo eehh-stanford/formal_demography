@@ -4,9 +4,9 @@ Animating Age-Specific Demographic Schedules
 Age-Specfic Fertility
 =====================
 
-First, download the data from [the Human Fertility Database](https://www.humanfertility.org). There is an `R` package, [HMDHFDplus](https://cran.r-project.org/web/packages/HMDHFDplus/index.html), that has utilities designed for use with these repositories, but I find it better pedagogically to go old-school when I'm doing this for a class.
+First, download the data from [the Human Fertility Database](https://www.humanfertility.org). You will need to register with a username and password. There is an `R` package, [HMDHFDplus](https://cran.r-project.org/web/packages/HMDHFDplus/index.html), that has utilities designed for use with these repositories, but I find it better pedagogically to go old-school when I'm doing this for a class. I also find the need to pass a username and password a bit awkward and find the benefit of a specialized package not outweighing the possible costs. So, download the data and make sure they're in the working directory (or use the path in your call to `read.table()`).
 
-Need to clean the ages a bit since under-12 is indicated as `12-` and over-55 by `55+`. Note that we have to double-escape the `+` in the regular expression since the plus sign is a quantifier for regular expressions.
+We need to clean the ages a bit since under-12 is indicated as `12-` and over-55 by `55+`. Note that we have to double-escape the `+` in the regular expression since the plus sign is a quantifier for regular expressions.
 
 ``` r
 mab <- read.table("USAmabRR.txt", header=TRUE, skip=2)
@@ -45,9 +45,12 @@ abline(v=mab$MAB[85], lty=2, col="red")
 
 ![](animate_schedules_files/figure-markdown_github/unnamed-chunk-1-1.png)
 
+Animation
+---------
+
 I use the `animate` package to create the gifs. Another option would have been `gganimate` which extends the `ggplot2` grammar of graphics to animated images, but I have more experience with `animate`, so that's what I went with. `animate` uses the [ImageMagick](http://www.imagemagick.org/script/index.php) library to create its animations, which may be a turn-off for some people since you need to install it separately. Fortunately, it's pretty straightforward to install using either [MacPorts](http://www.macports.org/) or [HomeBrew](https://brew.sh/).
 
-Simply set up a `for` loop to generate the 85 ASFR curves within a `saveGIF()` command. I find that an interval of 0.3 seconds gives a pretty snappy but comprehensible. Anything much longer makes the animation seem ponderously slow. Any quicker and it's hard to relate the changing curves to the historical period.
+Simply set up a `for` loop to generate the 85 ASFR curves within a `saveGIF()` command. I find that an interval of 0.3 seconds gives a pretty snappy but comprehensible animation. Anything much longer makes the animation seem ponderously slow. Any quicker and it's hard to relate the changing curves to the historical period.
 
 ``` r
 library(animation)
@@ -69,7 +72,7 @@ saveGIF({ for(i in 1:85){
 
     ## [1] TRUE
 
-Unfortunately, the output doesn't display in a Markdown document, but I can insert it manually.
+Unfortunately, the output doesn't display in a Markdown document, but we can insert it manually.
 
 ![animated asfr series](https://github.com/eehh-stanford/formal_demography/blob/master/usa_asfr_1933-2017.gif?raw=true)
 
@@ -97,7 +100,7 @@ I plot the natural logarithm of the sex-specific central death rate *m*<sub>*x*<
 4.  Minimum mortality rate at around age 10-11.
 5.  Linear increase on a log-scale after about age 30.
 6.  Male accident hump in late adolescence/early adulthood (particularly acute during WWII).
-7.  Slight decline in the mortality rate among oldest old.
+7.  Slight decline in the mortality rate among oldest old (note that HMD smooths the number in the open last age-class, so this should be viewed with caution).
 8.  Accentuation in sex differences as mortality improves.
 
 Again, use `animate` to generate the GIF animation of the evolution of the central death rate in the US. Add vertical lines to indicate life expectancy at birth for each year. The female curves are plotted in black and the male curves are plotted in grey.
